@@ -180,3 +180,26 @@ group by 1
     else 10*price end)
  from cte 
  group by 1
+ 
+ 
+ ******************BONUS QUESTION*********************
+ 
+ Ans-1
+ SELECT 
+s.customer_id
+, s.order_date
+,mm.product_name
+,mm.price
+, case
+    when join_date<=order_date then 'Y'
+    else 'N'
+    end as member
+
+FROM dannys_diner.sales AS s
+JOIN dannys_diner.members AS m
+	ON s.customer_id = m.customer_id
+JOIN dannys_diner.menu AS mm
+	ON s.product_id = mm.product_id
+order by 1,2,3;
+
+
