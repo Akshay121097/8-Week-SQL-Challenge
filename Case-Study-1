@@ -77,3 +77,28 @@ WHERE rank = 1;
    product_name
    from cte
    where rnk=1
+
+
+--7. Which item was purchased just before the customer became a member?
+WITH prior_member_purchased_cte AS 
+(
+  SELECT 
+    s.customer_id, 
+    m.join_date, 
+    s.order_date, 
+    s.product_id,
+    DENSE_RANK() OVER(PARTITION BY s.customer_id ORDER BY s.order_date DESC)  AS rank
+  FROM sales AS s
+	JOIN members AS m
+		ON s.customer_id = m.customer_id
+	WHERE s.order_date < m.join_date
+)
+
+SELECT 
+  s.customer_id, 
+  s.order_date, 
+  m2.product_name 
+FROM prior_member_purchased_cte AS s
+JOIN menu AS m2
+	ON s.product_id = m2.product_id
+WHERE rank = 1;
