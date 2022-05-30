@@ -35,6 +35,31 @@ from cte
         order by count(1) desc
 
 
+--6. Which item was purchased first by the customer after they became a member?
+WITH member_sales_cte AS 
+(
+  SELECT 
+    s.customer_id, 
+    m.join_date, 
+    s.order_date, 
+    s.product_id,
+    DENSE_RANK() OVER(PARTITION BY s.customer_id ORDER BY s.order_date) AS rank
+  FROM sales AS s
+	JOIN members AS m
+		ON s.customer_id = m.customer_id
+	WHERE s.order_date >= m.join_date)
+)
+
+SELECT 
+  s.customer_id, 
+  s.order_date, 
+  m2.product_name 
+FROM member_sales_cte AS s
+JOIN menu AS m2
+	ON s.product_id = m2.product_id
+WHERE rank = 1;
+
+
  5. Which item was the most popular for each customer?
 
 	with cte as (SELECT 
