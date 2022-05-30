@@ -33,7 +33,32 @@ from cte
 		ON s.product_id = m.product_id
         group by 1
         order by count(1) desc
+-- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
+  with cte as (SELECT 
+    s.customer_id, 
+    m.join_date, 
+    s.order_date, 
+    s.product_id,
+    mm.product_name,
+    mm.price,
+    join_date-order_date as diff_date
+    
+  FROM dannys_diner.sales AS s
+	JOIN dannys_diner.members AS m
+		ON s.customer_id = m.customer_id
+    JOIN dannys_diner.menu mm
+    on s.product_id = mm.product_id)
+    
+    
+    
+ select customer_id,
+ sum(case 
+    when product_name='sushi' then 20*price
+    when diff_date between 0 and 6 then 20*price 
+    else 10*price end)
+ from cte 
+ group by 1
 
 --6. Which item was purchased first by the customer after they became a member?
 WITH member_sales_cte AS 
