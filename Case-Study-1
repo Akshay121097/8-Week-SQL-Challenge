@@ -1,4 +1,7 @@
- 1. What is the total amount each customer spent at the restaurant?
+
+LINK: https://8weeksqlchallenge.com/case-study-1/
+
+1. What is the total amount each customer spent at the restaurant?
  
  Ans-1
 select s.customer_id, sum(m.price)
@@ -201,5 +204,39 @@ JOIN dannys_diner.members AS m
 JOIN dannys_diner.menu AS mm
 	ON s.product_id = mm.product_id
 order by 1,2,3;
+
+
+Ans-2
+
+with cte as (SELECT 
+s.customer_id
+, s.order_date
+,mm.product_name
+,mm.price
+, case
+    when join_date<=order_date then 'Y'
+    else 'N'
+    end as member
+
+FROM dannys_diner.sales AS s
+JOIN dannys_diner.members AS m
+	ON s.customer_id = m.customer_id
+JOIN dannys_diner.menu AS mm
+	ON s.product_id = mm.product_id
+order by 1,2,3)
+
+
+
+
+select *,
+case 
+when member='N' then NULL
+when member='Y' then  row_number() over(partition by customer_id,member
+                      order by order_date, product_name)
+end
+from cte
+
+
+
 
 
