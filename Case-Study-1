@@ -36,6 +36,25 @@ from cte
 		ON s.product_id = m.product_id
         group by 1
         order by count(1) desc
+	
+ 5. Which item was the most popular for each customer?
+
+	with cte as (SELECT 
+    customer_id,
+    product_name,
+    count(1),
+   dense_rank() over(order by count(1) desc) as rnk
+   FROM dannys_diner.sales AS s
+	JOIN dannys_diner.menu AS m
+		ON s.product_id = m.product_id
+        group by 1,2
+        order by 1, count(1) desc)
+        
+   select customer_id,
+   product_name
+   from cte
+   where rnk=1
+   
 -- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
   with cte as (SELECT 
@@ -88,23 +107,6 @@ JOIN menu AS m2
 WHERE rank = 1;
 
 
- 5. Which item was the most popular for each customer?
-
-	with cte as (SELECT 
-    customer_id,
-    product_name,
-    count(1),
-   dense_rank() over(order by count(1) desc) as rnk
-   FROM dannys_diner.sales AS s
-	JOIN dannys_diner.menu AS m
-		ON s.product_id = m.product_id
-        group by 1,2
-        order by 1, count(1) desc)
-        
-   select customer_id,
-   product_name
-   from cte
-   where rnk=1
 
 
 --7. Which item was purchased just before the customer became a member?
